@@ -48,3 +48,34 @@ type Bar<T> = T extends { a: (x: infer U) => void; b: (x: infer U) => void }
   : never;
 type T20 = Bar<{ a: (x: string) => void; b: (x: string) => void }>; // string
 type T21 = Bar<{ a: (x: T1) => void; b: (x: T2) => void }>; // T1 & T2
+
+// 获取只读属性
+
+// 实现泛型GetReadonlyKeys<T>，GetReadonlyKeys<T>返回由对象 T 所有只读属性的键组成的联合类型。
+
+// 例如
+
+// interface Todo {
+//   readonly title: string
+//   readonly description: string
+//   completed: boolean
+// }
+
+// type Keys = GetReadonlyKeys<Todo> // expected to be "title" | "description"
+
+// 检查类型X，Y 是否相等
+type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y
+  ? 1
+  : 2
+  ? true
+  : false;
+
+type GetReadonlyKeys<
+  T,
+  U extends Readonly<T> = Readonly<T>,
+  K extends keyof T = keyof T
+> = K extends keyof T
+  ? Equal<Pick<T, K>, Pick<U, K>> extends true
+    ? K
+    : never
+  : never;
