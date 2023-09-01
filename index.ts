@@ -86,6 +86,7 @@ type GetReadonlyKeys<
     ? K
     : never
   : never;
+
 /**
  * 这是一个用于获取类型 T 的所有只读属性的键的类型工具。
  * U extends Readonly<T> = Readonly<T> 是默认的泛型参数，它指示一个和 T 的结构相同但所有属性都被标记为 readonly 的类型。

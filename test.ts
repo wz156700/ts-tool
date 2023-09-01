@@ -31,3 +31,55 @@ type myselfElementOf<T extends Array<any>> = T extends Array<infer E>
 
 let myArr = [1, "2", true];
 type test2 = myselfElementOf<typeof myArr>;
+
+//3. union 转 intersection，如：T1 | T2 -> T1 & T2
+
+type myBar<T> = T extends { a: (x: infer U) => void; b: (y: infer U) => void }
+  ? U
+  : never;
+
+type myTest = myBar<{ a: (x: string) => void; b: (y: string) => void }>;
+
+// 测试
+
+let a = { name: "wlf" };
+let b = { age: 25 };
+
+type c = { name: string };
+type d = { age: number };
+
+type myTest2 = myBar<{ a: (x: typeof a) => void; b: (y: typeof b) => void }>;
+type myTest3 = myBar<{ a: (x: c) => void; b: (y: d) => void }>;
+
+// 4. 检查两个类型是否相等
+type myEqual<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y
+  ? 1
+  : 2
+  ? true
+  : false;
+
+// 测试
+type e = { name: { myname: "wlf" } };
+type f = { age: { age: "25" } };
+
+type test3 = myEqual<e, f>;
+
+// 5. 获取只读属性
+type myGetReadonlyKeys<
+  T,
+  U extends Readonly<T> = Readonly<T>,
+  K extends keyof T = keyof T
+> = K extends keyof T
+  ? myEqual<Pick<T, K>, Pick<U, K>> extends true
+    ? K
+    : never
+  : never;
+
+// 测试
+interface myTodo {
+  readonly title: string;
+  readonly description: string;
+  readonly completed: boolean;
+}
+
+type g = myGetReadonlyKeys<myTodo>;
