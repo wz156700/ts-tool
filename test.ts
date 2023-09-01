@@ -83,3 +83,28 @@ interface myTodo {
 }
 
 type g = myGetReadonlyKeys<myTodo>;
+
+//6.
+/**
+ * 不使用 Omit 实现 TypeScript 的 Omit<T, K> 泛型。
+ * Omit 会创建一个省略 K 中字段的 T 对象。
+ * 例如：
+ */
+
+type myselfOmit<T, K extends keyof T> = {
+  [P in keyof T as P extends K ? never : P]: T[P];
+};
+// 测试
+interface wlfTodo {
+  title: string;
+  description: string;
+  completed: boolean;
+}
+
+type wlfTodoPreview = myselfOmit<Todo, "description" | "title">;
+
+const wlftodo: wlfTodoPreview = {
+  completed: false,
+};
+
+type mytestw = Omit<wlfTodo, "description" | "title">;
