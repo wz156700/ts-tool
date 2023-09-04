@@ -108,3 +108,26 @@ const wlftodo: wlfTodoPreview = {
 };
 
 type mytestw = Omit<wlfTodo, "description" | "title">;
+
+// 7.
+/**
+ *  不使用 Pick<T, K> ，实现 TS 内置的 Pick<T, K> 的功能。
+ *  从类型 T 中选出符合 K 的属性，构造一个新的类型。
+ */
+type myselfPick<T, K extends keyof T> = {
+  [key in K]: T[key];
+};
+
+// 测试
+interface Todo2 {
+  title: string;
+  description: string;
+  completed: boolean;
+}
+
+type TodoPreview2 = MyPick<Todo2, "title" | "completed">;
+
+const todo2: TodoPreview2 = {
+  title: "Clean room",
+  completed: false,
+};
