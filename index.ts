@@ -143,3 +143,35 @@ const todo: TodoPreview = {
 type MyPick<T, K extends keyof T> = {
   [key in K]: T[key];
 };
+
+/**
+ * 
+ * 实现泛型GetReadonlyKeys<T>，GetReadonlyKeys<T>返回由对象 T 所有只读属性的键组成的联合类型。
+ * 例如
+ * interface Todo {
+  readonly title: string
+  readonly description: string
+  completed: boolean
+ }
+ type Keys = GetReadonlyKeys<Todo> // expected to be "title" | "description"
+ */
+
+// type myselfGetReadonlyKeys<
+//   T,
+//   K extends keyof T,
+//   U extends Readonly<T> = Readonly<T>
+// > = K extends keyof T
+//   ? myEqual<Pick<T, K>, Pick<U, K>> extends true
+//     ? K
+//     : never
+//   : never;
+
+type myselfGetReadOnlyKeys<
+  T,
+  K extends keyof T,
+  U extends Readonly<T> = Readonly<T>
+> = K extends keyof T
+  ? myEqual<Pick<T, K>, Pick<U, K>> extends true
+    ? K
+    : never
+  : never;

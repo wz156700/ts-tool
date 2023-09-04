@@ -1,3 +1,4 @@
+//github.com/type-challenges/type-challenges/issues/13427
 // 1. 推到函数返回类型
 /**
  * T必须是一个函数：由 T extends (...args : never[] )=> unknown 决定的
