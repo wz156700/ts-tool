@@ -132,3 +132,34 @@ const todo2: TodoPreview2 = {
   title: "Clean room",
   completed: false,
 };
+
+//8.
+/**
+ * 不要使用内置的Readonly<T>，自己实现一个。
+ * 泛型Readonly<T>会接收一个泛型参数，并返回一个完全相同的类型，只是所有属性都会是只读的。
+ */
+type myReadonly<T> = {
+  readonly [key in keyof T]: T[key];
+};
+interface Todo3 {
+  title: string;
+  description: string;
+}
+
+type test4 = myReadonly<Todo3>;
+
+// 9.
+/**
+ * 将一个元组类型转换为对象类型，这个对象类型的键/值和元组中的元素对应
+ *  */
+type TupleToObject<T extends readonly (keyof any)[]> = {
+  [key in T[number]]: key;
+};
+
+// type TupleToObject<T extends readonly (keyof any)[]> = {
+//   [Key in T[number]]: Key;
+// };
+
+const tuple = ["tesla", "model 3", "model X", "model Y"] as const;
+
+type result = TupleToObject<typeof tuple>; // expected { tesla: 'tesla', 'model 3': 'model 3', 'model X': 'model X', 'model Y': 'model Y'}
