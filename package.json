@@ -2,7 +2,7 @@
   "name": "ts-tool",
   "version": "1.0.0",
   "description": "ts工具函数",
-  "main": "index.ts",
+  "main": "test.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

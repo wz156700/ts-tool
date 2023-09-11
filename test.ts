@@ -102,7 +102,7 @@ interface wlfTodo {
   completed: boolean;
 }
 
-type wlfTodoPreview = myselfOmit<Todo, "description" | "title">;
+type wlfTodoPreview = myselfOmit<wlfTodo, "description" | "title">;
 
 const wlftodo: wlfTodoPreview = {
   completed: false,
@@ -126,7 +126,7 @@ interface Todo2 {
   completed: boolean;
 }
 
-type TodoPreview2 = MyPick<Todo2, "title" | "completed">;
+type TodoPreview2 = myselfPick<Todo2, "title" | "completed">;
 
 const todo2: TodoPreview2 = {
   title: "Clean room",
@@ -156,10 +156,134 @@ type TupleToObject<T extends readonly (keyof any)[]> = {
   [key in T[number]]: key;
 };
 
-// type TupleToObject<T extends readonly (keyof any)[]> = {
-//   [Key in T[number]]: Key;
-// };
-
 const tuple = ["tesla", "model 3", "model X", "model Y"] as const;
 
 type result = TupleToObject<typeof tuple>; // expected { tesla: 'tesla', 'model 3': 'model 3', 'model X': 'model X', 'model Y': 'model Y'}
+
+//获取对象属性包含嵌套对象属性
+const person = {
+  name: "Alice",
+  age: 25,
+  address: {
+    street: "123 Main St",
+    city: "Anytown",
+    country: "USA",
+  },
+};
+
+type PersonType = typeof person;
+
+/** 10.
+ * 实现一个泛型MyReadonly2<T, K>，它带有两种类型的参数T和K。
+ * 类型 K 指定 T 中要被设置为只读 (readonly) 的属性。如果未提供K，则应使所有属性都变为只读，就像普通的Readonly<T>一样。
+ */
+type myReadOnly2<T, K extends keyof T> = Omit<T, K> & Readonly<Pick<T, K>>;
+
+interface Todo4 {
+  title: string;
+  description: string;
+  completed: boolean;
+}
+
+type test6 = myReadOnly2<Todo4, "title" | "description">;
+
+const todo: myReadOnly2<Todo4, "title" | "description"> = {
+  title: "Hey",
+  description: "foobar",
+  completed: false,
+};
+
+// todo.title = "Hello"; // Error: cannot reassign a readonly property
+// todo.description = "barFoo"; // Error: cannot reassign a readonly property
+// todo.completed = true; // OK
+
+// type test7 = MyReadonly2<Todo4, "title" | "description">;
+
+// 11. 实现一个First<T>泛型，它接受一个数组T并返回它的第一个元素的类型。
+
+type First<T extends (keyof any)[]> = T[0];
+
+type arr1 = ["a", "b", "c"];
+type arr2 = [3, 2, 1];
+
+type head1 = First<arr1>; // 应推导出 'a'
+type head2 = First<arr2>; // 应推导出 3
+
+//12. 实现一个Last<T>泛型，它接受一个数组T并返回其最后一个元素的类型。
+type last<T extends (keyof any)[]> = [any, ...T][T["length"]];
+type arr3 = ["a", "b", "c"];
+type arr4 = [3, 2, 1];
+
+type head3 = last<arr3>; // 应推导出 'a'
+type head4 = last<arr4>; // 应推导出 3
+
+// 12.
+/**
+ * 实现一个泛型 DeepReadonly<T>，它将对象的每个参数及其子对象递归地设为只读。
+ */
+
+type DeepReadonly<T> = T extends never
+  ? T
+  : { readonly [key in keyof T]: DeepReadonly<T[key]> };
+
+type X = {
+  x: {
+    a: 1;
+    b: "hi";
+    c: {
+      d: {
+        r: {
+          g: {
+            b: {
+              a: 1;
+            };
+          };
+        };
+      };
+    };
+  };
+  y: "hey";
+};
+
+type Todo = DeepReadonly<X>; // should be same as `Expected`
+
+// 13
+/**
+ * 创建一个Length泛型，这个泛型接受一个只读的元组，返回这个元组的长度。
+ */
+type Length<T extends Readonly<Array<any>>> = T["length"];
+type tesla = ["tesla", "model 3", "model X", "model Y"];
+type teslaLength = Length<tesla>; // expected 4
+
+// 14.
+/**
+ * 假如我们有一个 Promise 对象，这个 Promise 对象会返回一个类型。在 TS 中，我们用 Promise 中的 T 来描述这个 Promise 返回的类型。请你实现一个类型，可以获取这个类型。
+ * 例如：Promise<ExampleType>，请你返回 ExampleType 类型。
+ */
+
+// type MyAwaited<T extends PromiseLike<any>> = T extends PromiseLike<infer U>
+//   ? U extends PromiseLike<any>
+//     ? MyAwaited<U>
+//     : U
+//   : never;
+
+type MyAwaited<T extends PromiseLike<any>> = T extends PromiseLike<infer U>
+  ? U extends PromiseLike<any>
+    ? MyAwaited<U>
+    : U
+  : never;
+
+type ExampleType = Promise<string>;
+
+type Result = MyAwaited<ExampleType>; // string
+
+//15
+/**
+ * 实现内置的 Exclude<T, U> 类型，但不能直接使用它本身。
+ * 从联合类型 T 中排除 U 中的类型，来构造一个新的类型。
+ */
+
+// T中的值能否赋给U，如果可以直接排除，否则返回T
+type MyExclude<T, U> = T extends U ? never : T;
+
+type Result2 = MyExclude<"a" | "b" | "c", "a">; // 'b' | 'c'
