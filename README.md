@@ -370,3 +370,43 @@ type MyParameters<T extends (...agrs: any) => any> = T extends (
 
 1. `T extends (...args: any) => any`: 表示 T 是一个`函数类型`。
 2. `T extends (...args: infer S) => any ? S : any`: 是一个条件类型和类型推断的组合，`如果 T 是一个函数类型，则结果类型是函数的参数类型列表 S，否则结果类型是 any`。
+
+### 十四 shift
+
+#### 题目描述
+
+实现类型版本的 Array.shift。
+
+#### 答案
+
+```
+type shift<T extends any[]> = T extends [infer First, ...infer Rest]
+  ? Rest
+  : never;
+
+```
+
+**答案解析**
+
+1. `T extends any[]` 表示 T 是一个`元组`或`数组类型`。
+2. `T extends [infer First, ...infer Rest] ? Rest : never `:是一个条件类型和类型推断的组合，如果 `T 是一个非空的元组或数组类型，则 First 是 T 的第一个元素的类型，Rest 是 T 的剩余元素的类型组成的元组`。结果类型是 `Rest`，否则结果类型是` never`。
+
+### 十五 pop
+
+#### 题目描述
+
+实现类型版本的 Array.pop。
+
+#### 答案
+
+```
+type shift<T extends any[]> = T extends [...infer Rest, infer last]
+  ? Rest
+  : never;
+
+```
+
+**答案解析**
+
+1. `T extends any[]` 表示 T 是一个`元组`或`数组类型`。
+2. `T extends [...infer Rest, infer last] ? Rest : never `:是一个条件类型和类型推断的组合，如果 `T 是一个非空的元组或数组类型，则 Rest 是 T last 是 T 的最后一个元素`。结果类型是 `Rest`，否则结果类型是` never`。
