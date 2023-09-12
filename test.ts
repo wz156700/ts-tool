@@ -1,4 +1,3 @@
-//github.com/type-challenges/type-challenges/issues/13427
 // 1. 推到函数返回类型
 /**
  * T必须是一个函数：由 T extends (...args : never[] )=> unknown 决定的
@@ -20,7 +19,7 @@ const myFn = (v: boolean) => {
 
 type test = MyselfReturnType<typeof myFn>;
 
-//2. 获取数组元素类型
+//2. 获取数组元素类型 cehi+
 /**
  * T 必须是一个数组，由 T extends Array<any> 决定的
  * 条件判断：T extends Array<infer E>，如果 T 是一个类型数组，返回数组的元素类型E,否则返回never
@@ -296,3 +295,81 @@ type Result2 = MyExclude<"a" | "b" | "c", "a">; // 'b' | 'c'
 type If<C extends Boolean, T, F> = C extends true ? T : F;
 type A = If<true, "a", "b">; // expected to be 'a'
 type B = If<false, "a", "b">; // expected to be 'b'
+
+//17
+/**
+ * 在类型系统里实现 JavaScript 内置的 Array.concat 方法，这个类型接受两个参数，返回的新数组类型应该按照输入参数从左到右的顺序合并为一个新的数组
+
+ */
+type Concat<T extends any[], U extends any[]> = [...T, ...U];
+
+type Result3 = Concat<[1], [2]>; // expected to be [1, 2]
+
+//18
+/**
+ * 在类型系统里实现 JavaScript 的 Array.includes 方法，这个类型接受两个参数，返回的类型要么是 true 要么是 false。
+ */
+
+type Includes<T extends readonly any[], U> = T extends [
+  infer First,
+  ...infer Last
+]
+  ? myEqual<U, First> extends true
+    ? true
+    : Includes<Last, U>
+  : false;
+
+type isPillarMen = Includes<["Kars", "Esidisi", "Wamuu", "Santana"], "Kars">; // expected to be `false`
+
+// 19
+/**
+ * 在类型系统里实现通用的 Array.push 。
+ *
+ */
+
+type Push<T extends any[], U> = [...T, U];
+
+type Result4 = Push<[1, 2], "3">; // [1, 2, '3']
+
+// 20
+/**
+ * 实现类型版本的 Array.unshift。
+ */
+type Unshift<T extends any[], U> = [U, ...T];
+type Result5 = Unshift<[1, 2], 0>; // [0, 1, 2,]
+
+// 21
+/**
+ * 实现类型版本的 Array.shift。
+ */
+type shift<T extends any[]> = T extends [infer First, ...infer Rest]
+  ? Rest
+  : never;
+
+type Result6 = shift<[1, 2]>; // [0, 1, 2,]
+
+// 22
+/**
+ * 实现类型版本的 Array.pop。
+ */
+type pop<T extends any[]> = T extends [...infer Rest, infer last]
+  ? Rest
+  : never;
+
+type Result7 = pop<[1, 2]>; // [0, 1, 2,]
+
+// 23
+/**
+ * 实现内置的 Parameters 类型，而不是直接使用它，可参考TypeScript官方文档。
+ * 例如：
+ */
+
+type MyParameters<T extends (...agrs: any) => any> = T extends (
+  ...args: infer S
+) => any
+  ? S
+  : any;
+
+const foo = (arg1: string, arg2: number): void => {};
+
+type FunctionParamsType = MyParameters<typeof foo>; // [arg1: string, arg2: number]
